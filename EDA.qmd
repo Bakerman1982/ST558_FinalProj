@@ -6,103 +6,244 @@ bibliography: references.bib
 csl: apa.csl
 ---
 
-```{r, warning=FALSE, output=FALSE}
+```{r, library load, warning=FALSE, output=FALSE}
 library(tidyverse)
 library(ggplot2)
-#library(ggmosaic)
 library(knitr)
 library(kableExtra)
+library(outliers)
+library(forcats)
+library(gridExtra)
+library(dplyr)
+library(tidyr)
+library(patchwork)
 ```
 
-## Diabetes Summary
+### Diabetes Summary
 
-Diabetes is a common chronic disease in the United States, affecting millions of Americans and imposing a significant financial burden on the US healthcare system.  It is a disease that impairs the body's ability to regulate blood glucose, leading to severe complications like heart disease, vision loss, and kidney disease.  Early diagnosis and management through lifestyle changes and medical treatments can lessen its impact.  The Center for Disease Control (CDC) reports that as of 2018, 34.2 million Americans have diabetes, with substantial economic costs nearing $400 billion annually.  To better understand diabetes, the CDC conducts an annual telephone survey through the Behavioral Risk Factor Surveillance System (BRFSS).  They have been collecting observational data since 1984 and through this program, 400,000 responses are collected annually on various behaviors and conditions about the disease.  
+Diabetes is a common chronic disease in the United States, affecting millions of Americans and imposing a significant financial burden on the US healthcare system.  It is a disease that impairs the body's ability to regulate blood glucose, leading to severe complications like heart disease, vision loss, and kidney disease.  Early diagnosis and management through lifestyle changes and medical treatments can lessen its impact.  The Center for Disease Control (CDC) reports that as of 2018, 34.2 million Americans have diabetes, with substantial economic costs nearing $400 billion annually.  To better understand diabetes, the CDC conducts an annual telephone survey through the Behavioral Risk Factor Surveillance System (BRFSS).  They have been collecting observational data since 1984 and through this program, 400,000 responses are collected annually on various behaviors and conditions about the disease.  In this exploratory data analysis, we will look at the variables, the factors, the problems that come with raw data.  Visual help will give some insight into patterns and narratives. 
 
-The dataset found in this analysis is from 2015.  There are 253680 observations and 22 independent variables.  
+### Dataset and Variables
 
-About the variables
+The dataset found in this analysis is from 2015.  There are 253680 observations, 21 independent variables and a dependent variable called Diabetes_binary that indicates one of three categories relating to a diabetic diagnosis.
 
-
-```{r, output=FALSE, warning=FALSE, error=FALSE}
+```{r, read-in data, output=FALSE, warning=FALSE, error=FALSE}
 #Read in the dataset
 diabetes_data_raw <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
-```{r}
-#List the various column headers
+```{r, variables}
+#Listing of variables
 colnames(diabetes_data_raw)
 ```
 
-```{r}
-#Checking for missing data.
+Upon reviewing the dataset, I found no missing values. However, there are approximately 9,000 rows where the BMI values exceed 50. While I considered removing these extreme values, I decided against it for now. In a production setting, I would seek advice from a medical specialist or someone familiar with the data collection to investigate these high values for potential errors or explanations. I will conduct an outlier test on these values, and depending on the results, I may prepare two reports—one including the BMI extremes and one excluding them.
+
+```{r, NA-check}
+#Checking for missing data
 diabetes_data_NA_report <- diabetes_data_raw %>%
   summarise_all(~sum(is.na(.))) %>%
-  pivot_longer(cols = everything(), names_to = "Independent Variable", values_to = "Number of NAs Discovered")
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Number of missing values discovered")
 print(diabetes_data_NA_report, n = Inf)
 ```
 
-```{r}
+As part of wrangling the data, this code chunk was created to format the data into factors for variables that it makes sense to do so. The remaining factors I will leave as numeric values.  
+```{r, factorize}
 #Factorize the binary variables for better downstream analysis. 
-#There are about 3000 rows where the BMI was observed to be above 50.  I considered removing rows with these extremely high values but decided not to.  In production, I likely would have sought counsel from a specialist or someone familiar with recording observations to this study to look into these values for possible errors.  I will conduct an outlier test on these values; perhaps included two reports--one with and one without the BMI extremes. 
 diabetes_data_clean <- diabetes_data_raw %>%
-  mutate_at(vars(HighBP, HighChol, CholCheck, Smoker, 
+  mutate_at(vars(Diabetes_binary, HighBP, HighChol, CholCheck, Smoker, 
                  Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, 
                  Veggies, HvyAlcoholConsump, AnyHealthcare, NoDocbcCost, 
                  DiffWalk, Sex), as.factor)
 ```
 
-```{r}
+
+### Outlier Test for Variable BMI
+
+Earlier, I expressed concern about outliers in the BMI variable, and these concerns appear to be justified. Both numeric and visual tests indicate a substantial number of outliers. The numeric tests showed that 2,963 observations fell outside three standard deviations from the mean, while the IQR test identified 9,847 observations beyond the bounds.  
+
+```{r, outlier_numSum}
+#Check outliers using Z-scores. 
+outlier_z_data <- diabetes_data_clean %>%
+  mutate(z_score = (BMI - mean(BMI)) / sd(BMI)) %>%
+  filter(abs(z_score) > 3)       %>%
+  arrange(BMI)
+
+#Check outliers using the interquartile method
+Q1 <- quantile(diabetes_data_clean$BMI, 0.25)
+Q3 <- quantile(diabetes_data_clean$BMI, 0.75)
+IQR <- Q3 - Q1
+outlier_IQR_data <- diabetes_data_clean %>%
+  filter(BMI < (Q1 - 1.5 * IQR) | BMI > (Q3 + 1.5 * IQR))
+```
+
+```{r, numSum_results}
+count(outlier_z_data) # Number of outliers using the Z-Score method
+min(outlier_z_data$BMI[outlier_z_data$BMI >= 30]) # Finding cutoff value; lowest BMI value outside 3 SDs
+count(outlier_IQR_data) # Number of outliers using the IQR method
+max(outlier_IQR_data$BMI[outlier_IQR_data$BMI <= 30]) # Finding cutoff value; highest BMI outside of the lowerbound range
+min(outlier_IQR_data$BMI[outlier_IQR_data$BMI >= 30]) # Finding cutoff value; lowest BMI outside of the upperbound range
+```
+
+```{r, data_strip_outliers}
+#Remove BMI observations 50
+diabetes_data_clean_noOutliers <- diabetes_data_clean %>%
+  filter(BMI < 50)
+```
+
+This boxplot highlights in red observations that are considered outliers.\
+
+```{r, outlier_box}
+# Combine the datasets
+combined_data <- bind_rows(
+  mutate(diabetes_data_clean, Source = "With Outliers"),
+  mutate(diabetes_data_clean_noOutliers, Source = "No Outliers")
+)
+
+# Plot with faceting
+ggplot(combined_data, aes(x = "", y = BMI)) +
+  geom_boxplot(fill = "lightblue", color = "black", outlier.colour = "red") +
+  labs(title = "Boxplot of BMI", x = "", y = "BMI") +
+  facet_wrap(~ Source) +
+  theme_minimal()
+```
+
+The histogram similarly illustrates the pronounced right skew caused by the outliers in the distribution. The dotted red lines indicate the boundaries for three standard deviations from the mean.\
+```{r, outlier_hist}
+# Combine the datasets
+combined_data <- bind_rows(
+  mutate(diabetes_data_clean, Source = "With Outliers"),
+  mutate(diabetes_data_clean_noOutliers, Source = "No Outliers")
+)
+
+# Calculate mean and standard deviation
+mean_bmi <- mean(diabetes_data_clean$BMI, na.rm = TRUE)
+sd_bmi <- sd(diabetes_data_clean$BMI, na.rm = TRUE)
+
+# Define the boundaries for 3 standard deviations from the mean
+lower_bound <- mean_bmi - 3 * sd_bmi
+upper_bound <- mean_bmi + 3 * sd_bmi
+
+# Plot with faceting
+ggplot(combined_data, aes(x = BMI)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black", alpha = 0.7) +
+  geom_vline(xintercept = c(lower_bound, upper_bound), color = "red", linetype = "dashed") +
+  labs(title = "Histogram of BMI", x = "BMI", y = "Frequency") +
+  facet_wrap(~ Source) +
+  theme_minimal()
+```
+In a typical Quantile-Quantile (QQ) plot, we expect to see a diagonal, mostly straight line. However, in the case of BMI without removal of outliers, the Q-Q plot shows a significant deviation from this pattern. The tails of the Q-Q line curve away from the diagonal line quite drastically, which strongly indicates the presence of outliers.\
+
+```{r, outlier_QQ}
+# Combine the datasets
+combined_data <- bind_rows(
+  mutate(diabetes_data_clean, Source = "With Outliers"),
+  mutate(diabetes_data_clean_noOutliers, Source = "No Outliers")
+)
+
+# Plot with faceting
+ggplot(combined_data, aes(sample = BMI)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(title = "QQ Plot of BMI", x = "Theoretical Quantiles", y = "Sample Quantiles") +
+  facet_wrap(~ Source) +
+  theme_minimal()
+```
+Based on the totality of the information, I decided to treat BMI values of 50 and higher as outliers and remove them from the dataset. I chose a conservative approach using the Z-score method, which set the cutoff at 49. In contrast, the IQR and boxplot methods suggested a cutoff at 42, resulting in the removal of 6,000 more observations than the Z-score method. Given the dataset’s large size, I wanted to avoid being overly aggressive without consulting a health specialist or someone familiar with the data collection. After rerunning the boxplot, histogram, and QQ plot, I am confident in moving forward with the dataset after removing the outliers.\
+
+### Data Summary
+
+As a result of there being many variables, grouping the factored variables into themes made sense.\
+```{r, var-theme}
 # Group variables into common themes.
-Health_Factors <- c("Diabetes_binary","BMI","HighBP","HighChol","Stroke","HeartDiseaseorAttack","GenHlth","MentHlth","PhysHlth","DiffWalk","Sex","Age")
-Lifestyle_Factors <- c("PhysActivity","Smoker","Fruits","Veggies","HvyAlcoholConsump","Education","Income")
+Health_Factors <- c("Diabetes_binary","HighBP","HighChol","Stroke","HeartDiseaseorAttack","DiffWalk","Sex")
+Lifestyle_Factors <- c("PhysActivity","Smoker","Fruits","Veggies","HvyAlcoholConsump")
 Healthcare_Factors <- c("CholCheck","AnyHealthcare","NoDocbcCost")
 ```
 
-```{r, echo=F}
-# Create a Health_Factors data.frame with counts
+```{r, kable_tbl_1, echo=FALSE}
+# Calculate counts and proportions for Health_Factors
+health_counts <- lapply(Health_Factors, function(var) table(diabetes_data_clean_noOutliers[[var]]))
+
+# Ensure each variable has both "0" and "1" levels (if applicable)
+health_counts <- lapply(health_counts, function(counts) {
+  if (!("0" %in% names(counts))) counts <- c(counts, "0" = 0)
+  if (!("1" %in% names(counts))) counts <- c(counts, "1" = 0)
+  counts <- counts[c("0", "1")] # Ensure the order is "0" then "1"
+  return(counts)
+})
+
+# Create a data frame for Health_Factors with counts and proportions
 df_health_kable <- data.frame(
-  Health_Factors = Health_Factors,
-  Levels = c("0, 1, 2","0-9999","0, 1","0, 1","0, 1","0, 1","1, 2, 3, 4, 5","1-30", "1-30","0, 1","0, 1","1-13")
+  `Health Factors` = Health_Factors,
+  Levels = sapply(health_counts, function(counts) paste(names(counts), collapse = ",")),
+  Counts = sapply(health_counts, function(counts) paste(as.numeric(counts), "(", names(counts), ")", sep = "", collapse = " ")),
+  Proportions = sapply(health_counts, function(counts) paste(round(prop.table(counts), 2), "(", names(counts), ")", sep = "", collapse = " "))
 )
 
-# Create a Lifestyle_Factors Kable Table
-kable(df_health_kable, format = "html") %>%
+# Create the Kable table
+kable(df_health_kable, format = "html", col.names = c("Health Factors", "Levels", "Counts", "Proportions")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-```{r, echo=F}
 
+```{r, kable_tbl_2, echo=F}
+# Calculate counts and proportions for Lifestyle_Factors
+lifestyle_counts <- lapply(Lifestyle_Factors, function(var) table(diabetes_data_clean_noOutliers[[var]]))
 
-# Create a Lifestyle_Factors data.frame 
+# Ensure each variable has both "0" and "1" levels (if applicable)
+lifestyle_counts <- lapply(lifestyle_counts, function(counts) {
+  if (!("0" %in% names(counts))) counts <- c(counts, "0" = 0)
+  if (!("1" %in% names(counts))) counts <- c(counts, "1" = 0)
+  counts <- counts[c("0", "1")] # Ensure the order is "0" then "1"
+  return(counts)
+})
+
+# Create a data frame for Lifestyle_Factors with counts and proportions
 df_lifestyle_kable <- data.frame(
-  Lifestyle_Factors = Lifestyle_Factors, 
-  Levels = c("0, 1", "0, 1","0, 1","0, 1","0, 1","1, 2, 3, 4, 5, 6", "1, 2, 3, 4, 5, 6, 7, 8")
+  `Lifestyle Factors` = Lifestyle_Factors,
+  Levels = rep("0,1", length(Lifestyle_Factors)),
+  Counts = sapply(lifestyle_counts, function(counts) paste(as.numeric(counts), "(", names(counts), ")", sep = "", collapse = " ")),
+  Proportions = sapply(lifestyle_counts, function(counts) paste(round(prop.table(counts), 2), "(", names(counts), ")", sep = "", collapse = " "))
 )
-# Create a Lifestyle_Factors Kable Table
-kable(df_lifestyle_kable, format = "html") %>%
+
+# Create the Kable table
+kable(df_lifestyle_kable, format = "html", col.names = c("Lifestyle Factors", "Levels", "Counts", "Proportions")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 
-```{r, echo=F}
-# Create a Healthcare_Factors data.frame 
+```{r, kable_tbl_3, echo=F}
+# Calculate counts and proportions for Healthcare_Factors
+healthcare_counts <- lapply(Healthcare_Factors, function(var) table(diabetes_data_clean_noOutliers[[var]]))
+
+# Ensure each variable has both "0" and "1" levels (if applicable)
+healthcare_counts <- lapply(healthcare_counts, function(counts) {
+  if (!("0" %in% names(counts))) counts <- c(counts, "0" = 0)
+  if (!("1" %in% names(counts))) counts <- c(counts, "1" = 0)
+  counts <- counts[c("0", "1")] # Ensure the order is "0" then "1"
+  return(counts)
+})
+
+# Create a data frame for Healthcare_Factors with counts and proportions
 df_healthcare_kable <- data.frame(
-  Healthcare_Factors = Healthcare_Factors,
-  Levels = c("0, 1","0, 1","0, 1")
+  `Healthcare Factors` = Healthcare_Factors,
+  Levels = rep("0,1", length(Healthcare_Factors)),
+  Counts = sapply(healthcare_counts, function(counts) paste(as.numeric(counts), "(", names(counts), ")", sep = "", collapse = " ")),
+  Proportions = sapply(healthcare_counts, function(counts) paste(round(prop.table(counts), 2), "(", names(counts), ")", sep = "", collapse = " "))
 )
-# Create a Healthcare_Factors Kable Table
-kable(df_healthcare_kable, format = "html") %>%
+
+# Create the Kable table
+kable(df_healthcare_kable, format = "html", col.names = c("Healthcare Factors", "Levels", "Counts", "Proportions")) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
 
-```{r}
-# Summary statistics of our numeric variables
 ```
 
 
-```{r}
+
+```{r, kable_tbl_4, echo=FALSE}
 # list of column values and their summaries. 
-summary_list <- lapply(diabetes_data_clean, summary)
+summary_list <- lapply(diabetes_data_clean_noOutliers, summary)
 
 # Convert the list to a data frame
 summary_df <- as.data.frame(do.call(rbind, summary_list))
@@ -113,79 +254,336 @@ summary_df <- summary_df %>%
   select(-Variable) %>% 
   mutate(across(where(is.character), as.numeric)) 
 
-# Print the summary dataframe
-print(summary_df[c("BMI", "GenHlth", "Age", "Education", "Income"),])
+# Subset the summary dataframe for the specified columns
+summary_subset_df <- summary_df[c("BMI", "GenHlth", "Age", "Education", "Income", "MentHlth", "PhysHlth"),]
+
+# Create the Kable table
+kable(summary_subset_df, format = "html", col.names = c("Min", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  add_header_above(c(" " = 1, "Summary Statistics on Non-Factor Variables" = 6))
 
 ```
 
-Boxplot
-```{r, eval=TRUE}
+### Data Visualization
 
-# Example tibble
-diabetes_data_clean <- tibble(
-  Sex = rep(c("Male", "Female"), each = 50),
-  Age_Group = rep(c("Young", "Middle-aged", "Old"), length.out = 100),
-  BMI_Category = rep(c("Underweight", "Normal", "Overweight", "Obese"), length.out = 100),
-  Diabetes_binary = sample(c("Yes", "No"), 100, replace = TRUE)
+```{r, bar_chart_health_factors}
+# Define the red and gray colors
+ncsu_colors <- c(
+  "0" = "#5B6770",  # Gray for absence
+  "1" = "#CC0000"   # Red for presence
 )
 
-# Reshape data to long format
-diabetes_data_long <- diabetes_data_clean %>%
-  pivot_longer(cols = c(Sex, Age_Group, BMI_Category), names_to = "Variable", values_to = "Value")
+# Define health factors excluding Diabetes_binary
+Health_Factors <- c("HighBP", "HighChol", "Stroke", "HeartDiseaseorAttack", "DiffWalk")
 
-# Create stacked bar chart
-ggplot(diabetes_data_long, aes(x = Value, fill = Diabetes_binary)) +
-  geom_bar(position = "stack") +
-  labs(title = "Distribution of Diabetes by Different Variables", x = "Value", y = "Count", fill = "Diabetes_binary") +
-  facet_wrap(~ Variable, scales = "free_x")
-```
+# Filter dataset for Diabetes_binary = 1
+filtered_data <- diabetes_data_clean_noOutliers %>%
+  filter(Diabetes_binary == 1) %>%
+  select(all_of(Health_Factors))
 
-```{r, eval=FALSE}
-ggplot(diabetes_data_clean, aes(x = HighBP)) +
-  geom_bar() +
-  facet_wrap(~ Diabetes_binary) +
-  labs(title = "Distribution of HighBP by Diabetes_binary", x = "HighBP", y = "Count")
+# Convert data to long format
+long_data <- filtered_data %>%
+  pivot_longer(cols = everything(), names_to = "Health_Factor", values_to = "Value") %>%
+  group_by(Health_Factor, Value) %>%
+  summarize(Count = n(), .groups = "drop")
 
-```
-
-```{r, eval=FALSE}
-ggplot(diabetes_data_clean, aes(x = Diabetes_binary, y = BMI)) +
-  geom_boxplot() +
-  labs(title = "BMI by Diabetes Status", x = "Diabetes_binary", y = "BMI")
-
-```
-
-```{r, eval=FALSE}
-ggplot(diabetes_data_clean, aes(x = Diabetes_binary, y = BMI)) +
-  geom_violin() +
-  labs(title = "BMI by Diabetes Status", x = "Diabetes_binary", y = "BMI")
+# Create the stacked horizontal bar chart with custom red and gray colors
+ggplot(long_data, aes(x = Count, y = Health_Factor, fill = as.factor(Value))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = ncsu_colors,
+    labels = c("0" = "Absence", "1" = "Presence")  # Change legend labels
+  ) +
+  labs(
+    x = "Count",
+    y = "Health Factor",
+    fill = "Level",
+    title = "Health Factors for those diagnosed with Diabetes"
+  ) +
+  theme_minimal()
 
 ```
+The bar chart reveals that a positive diabetes diagnosis is indiscriminate along gender lines, indicating that both males and females are equally likely to be diagnosed with diabetes. This suggests that gender does not play a significant role in the prevalence of diabetes within the studied population.
 
-```{r, eval=FALSE}
-ggplot(diabetes_data_clean, aes(x = factor(1), fill = Diabetes_binary)) +
-  geom_bar(position = "fill") +
-  labs(title = "Proportion of Diabetes_binary", x = "", y = "Proportion") +
-  coord_polar(theta = "y") +
-  theme_void()
+Interestingly, the presence of heart disease, including at least one heart attack or stroke, does not appear to be a necessary comorbidity for diabetes. While cardiovascular issues are common among diabetes patients, their absence in a substantial number of cases indicates that diabetes can develop independently of these conditions.
+
+However, the data shows that high cholesterol and high blood pressure are prevalent among diabetes patients, with over two-thirds of those diagnosed exhibiting these conditions. This finding underscores the strong association between diabetes and these two risk factors. High cholesterol and high blood pressure are known to contribute to insulin resistance and other metabolic disturbances that can lead to the development and progression of diabetes.
+
+This information is crucial for both preventive measures and management strategies. For instance, monitoring and controlling blood pressure and cholesterol levels should be a priority in diabetes prevention programs. For individuals already diagnosed with diabetes, managing these conditions is essential to prevent complications and improve overall health outcomes.
+
+```{r, bar_chart_lifestyle_factors}
+# Define the red and gray colors
+ncsu_colors <- c(
+  "0" = "#5B6770",  # Gray for absence
+  "1" = "#CC0000"   # Red for presence
+)
+
+# Define lifestyle factors
+Lifestyle_Factors <- c("PhysActivity", "Smoker", "Fruits", "Veggies", "HvyAlcoholConsump")
+
+# Filter dataset for Diabetes_binary = 1
+filtered_data_lifestyle <- diabetes_data_clean_noOutliers %>%
+  filter(Diabetes_binary == 1) %>%
+  select(all_of(Lifestyle_Factors))
+
+# Convert all columns to factors
+filtered_data_lifestyle <- filtered_data_lifestyle %>%
+  mutate(across(everything(), as.factor))
+
+# Convert data to long format
+long_data_lifestyle <- filtered_data_lifestyle %>%
+  pivot_longer(cols = everything(), names_to = "Lifestyle_Factor", values_to = "Value") %>%
+  group_by(Lifestyle_Factor, Value) %>%
+  summarize(Count = n(), .groups = "drop")
+
+# Create the stacked horizontal bar chart with custom ncsu colors
+ggplot(long_data_lifestyle, aes(x = Count, y = Lifestyle_Factor, fill = as.factor(Value))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = ncsu_colors,
+    labels = c("0" = "Absence", "1" = "Presence")  # Change legend labels
+  ) +
+  labs(
+    x = "Count",
+    y = "Lifestyle Factor",
+    fill = "Level",
+    title = "Lifestyle Factors for those diagnosed with Diabetes"
+  ) +
+  theme_minimal()
+```
+
+Many of the variables in the lifestyle group—such as smoking, physical activity, and fruit consumption—are split evenly among the participants. However, a noteworthy finding is that heavy alcohol consumption is not common among patients diagnosed with diabetes. In contrast, over three-quarters of these patients reported consuming vegetables one or more times a day.
+
+This disparity between fruit and vegetable consumption is intriguing. I hypothesize that it may be due to the different ways these foods are typically prepared and consumed. Fruits are often eaten raw, making them convenient and quick to consume without additional preparation. On the other hand, vegetables frequently require cooking or seasoning, which may involve adding ingredients like oils, sauces, or salt. This additional preparation might affect the frequency and ease with which vegetables are consumed compared to fruits.
+
+Furthermore, it’s worth exploring how these dietary habits correlate with diabetes management and overall health outcomes. For instance, the nutrients obtained from raw fruits and prepared vegetables might have different impacts on blood sugar levels and other health markers. Understanding these nuances can help tailor dietary recommendations more effectively for individuals with diabetes.
+
+```{r, bar_chart_healthcare_factors}
+# Define the red and gray colors
+ncsu_colors <- c(
+  "0" = "#5B6770",  # Gray for absence
+  "1" = "#CC0000"   # Red for presence
+)
+
+# Define healthcare factors
+Healthcare_Factors <- c("CholCheck", "AnyHealthcare", "NoDocbcCost")
+
+# Filter dataset for Diabetes_binary = 1
+filtered_data_healthcare <- diabetes_data_clean_noOutliers %>%
+  filter(Diabetes_binary == 1) %>%
+  select(all_of(Healthcare_Factors))
+
+# Convert data to long format
+long_data_healthcare <- filtered_data_healthcare %>%
+  pivot_longer(cols = everything(), names_to = "Healthcare_Factor", values_to = "Value") %>%
+  group_by(Healthcare_Factor, Value) %>%
+  summarize(Count = n(), .groups = "drop")
+
+# Create the stacked horizontal bar chart with custom ncsu colors
+ggplot(long_data_healthcare, aes(x = Count, y = Healthcare_Factor, fill = as.factor(Value))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(
+    values = ncsu_colors,
+    labels = c("0" = "Absence", "1" = "Presence")  # Change legend labels
+  ) +
+  labs(
+    x = "Count",
+    y = "Healthcare Factor",
+    fill = "Level",
+    title = "Healthcare Factors for those diagnosed with Diabetes"
+  ) +
+  theme_minimal()
+```
+
+Healthcare factors significantly influence the diagnosis of diabetes. Approximately 97% of participants reported having had a cholesterol check within the last five years, and around 95% confirmed having healthcare coverage. It stands to reason that both a cholesterol check and healthcare coverage are essential for diagnosing diabetes. Furthermore, these two variables might interact with each other, so we will test for their covariance.
+
+Eight percent of patients reported not seeing a doctor when needed in the past 12 months due to cost. While the United States has made significant strides in expanding healthcare coverage, this remaining proportion highlights the need for further adjustments in public policy to ensure that all individuals can access medical care regardless of expense.
+
+
+```{r, BMI_Hist, warning=FALSE}
+# Define the NCSU colors
+ncsu_colors <- c(
+  "Distribution" = "#CC0000",  # Red for the distribution
+  "Mean" = "#0000FF",         # Blue for the mean line
+  "Median" = "#FFA500"        # Orange for the median line
+)
+
+# Create the plot
+ggplot(diabetes_data_clean_noOutliers, aes(x = BMI)) +
+  geom_histogram(
+    binwidth = 1,  # Adjust binwidth as needed
+    fill = ncsu_colors["Distribution"],
+    color = "black",
+    alpha = 0.7
+  ) +
+  geom_vline(aes(xintercept = mean(BMI, na.rm = TRUE)), color = ncsu_colors["Mean"], linetype = "dashed", size = 1) +
+  geom_vline(aes(xintercept = median(BMI, na.rm = TRUE)), color = ncsu_colors["Median"], linetype = "dotted", size = 1) +
+  annotate("text", x = mean_bmi, y = Inf, label = "Mean", color = ncsu_colors["Mean"], vjust = 1.5, hjust = 1.1) +
+  
+ 
+  labs(
+    title = "Distribution of BMI",
+    x = "BMI",
+    y = "Frequency"
+  ) +
+  theme_minimal()
 
 ```
 
-```{r, eval=FALSE}
-ggplot(diabetes_data_clean) +
-  geom_mosaic(aes(x = product(Sex, Diabetes_binary), fill = Diabetes_binary)) +
-  labs(title = "Mosaic Plot of Sex and Diabetes Status", x = "Sex", y = "Diabetes Status")
+We have already examined the histogram after removing the outliers, but I wanted to present a more detailed view to highlight some nuances. Upon removing the outliers, we first observe that the right tail tapers but then abruptly gets truncated at around 500 observations when values reach 49. There is still a slight right skew, as the mean is positioned to the right of the median, indicating that the distribution of observations is not perfectly symmetrical around the mean..  
 
+```{r, facet_summary_diab, echo=FALSE}
+# Define the NCSU colors
+ncsu_colors <- c(
+  "Frequency" = "#CC0000"  # Red for the frequency plots
+)
+
+# Variables for faceting
+facet_vars <- c("GenHlth", "Education", "Income", "MentHlth", "PhysHlth", "Age")
+
+# Filter dataset for Diabetes_binary = 0
+filtered_data_diabetic <- diabetes_data_clean_noOutliers %>%
+  filter(Diabetes_binary == 1) %>%
+  select(all_of(facet_vars))
+
+# Convert data to long format for faceting
+long_data_facet_not_diabetic <- filtered_data_diabetic %>%
+  pivot_longer(cols = all_of(facet_vars), names_to = "Variable", values_to = "Value")
+
+# Create individual ggplot objects with titles and blue mean lines
+plot_list_not_diabetic <- lapply(facet_vars, function(var) {
+  data_var <- long_data_facet_not_diabetic %>%
+    filter(Variable == var)
+  
+  p <- ggplot(data_var, aes(x = Value, fill = "Frequency")) +
+    geom_histogram(binwidth = ifelse(var %in% c("Age", "Education", "Income"), 1, 1), 
+                   color = "black", alpha = 0.7) +
+    scale_fill_manual(values = ncsu_colors) +
+    labs(
+      x = ifelse(var %in% c("MentHlth", "PhysHlth"), "Days", "Value"),
+      y = "Frequency",
+      title = paste("Distribution of", var),
+      fill = "Legend"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  if (var %in% c("Age", "MentHlth", "PhysHlth")) {
+    p <- p + geom_vline(aes(xintercept = mean(Value, na.rm = TRUE)), color = "#0000FF", linetype = "dashed", size = 1)
+  }
+  
+  if (var == "Age") {
+    p <- p + scale_x_continuous(
+      breaks = 1:13,
+      labels = c("18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
+    )
+  } else if (var == "Education") {
+    p <- p + scale_x_continuous(
+      breaks = 1:6,
+      labels = c("No school", "Elementary/Middle", "Some high school", "High school graduate", "Some college or technical school", "College graduate")
+    )
+  } else if (var == "GenHlth") {
+    p <- p + scale_x_continuous(
+      breaks = 1:5,
+      labels = c("excellent", "very good", "good", "fair", "poor")
+    )
+  } else if (var == "Income") {
+    p <- p + scale_x_continuous(
+      breaks = 1:8,
+      labels = c("Less than $10,000", "Less than $15,000", "Less than $20,000", "Less than $25,000", "Less than $35,000", "Less than $50,000", "Less than $75,000", "$75,000 or more")
+    )
+  } else if (var %in% c("MentHlth", "PhysHlth")) {
+    p <- p + scale_x_continuous(breaks = seq(0, 30, by = 5), labels = seq(0, 30, by = 5))
+  }
+  
+  return(p)
+})
+
+grid.arrange(grobs = plot_list_not_diabetic, ncol = 2, top = "Non-Factor Variables of Patients Diagnosed with Diabetes")
+```
+This facet contains plots from diagnosed diabetics based on our non-factor variables. Patients were observed to report their general health as good, fair, or poor, indicating a decline in quality of life. Regarding education, diabetes diagnoses were evenly distributed among high school graduates, college graduates, and those with any college or technical school experience. Diabetes appears to be more prevalent among higher-income and older individuals, suggesting a possible interaction between these two variables that warrants further investigation. Many diabetics reported no days of mental or physical health issues, though more individuals with diabetes reported a higher number of days with physical health issues compared to mental health issues.\
+
+```{r, facet_summary_no_diab, echo=FALSE}
+# Define the NCSU colors
+ncsu_colors <- c(
+  "Frequency" = "#CC0000"  # Red for the frequency plots
+)
+
+# Variables for faceting
+facet_vars <- c("GenHlth", "Education", "Income", "MentHlth", "PhysHlth", "Age")
+
+# Filter dataset for Diabetes_binary = 0
+filtered_data_diabetic <- diabetes_data_clean_noOutliers %>%
+  filter(Diabetes_binary == 0) %>%
+  select(all_of(facet_vars))
+
+# Convert data to long format for faceting
+long_data_facet_not_diabetic <- filtered_data_diabetic %>%
+  pivot_longer(cols = all_of(facet_vars), names_to = "Variable", values_to = "Value")
+
+# Create individual ggplot objects with titles and blue mean lines
+plot_list_not_diabetic <- lapply(facet_vars, function(var) {
+  data_var <- long_data_facet_not_diabetic %>%
+    filter(Variable == var)
+  
+  p <- ggplot(data_var, aes(x = Value, fill = "Frequency")) +
+    geom_histogram(binwidth = ifelse(var %in% c("Age", "Education", "Income"), 1, 1), 
+                   color = "black", alpha = 0.7) +
+    scale_fill_manual(values = ncsu_colors) +
+    labs(
+      x = ifelse(var %in% c("MentHlth", "PhysHlth"), "Days", "Value"),
+      y = "Frequency",
+      title = paste("Distribution of", var),
+      fill = "Legend"
+    ) +
+    theme_minimal() +
+    theme(legend.position = "none")
+  
+  if (var %in% c("Age", "MentHlth", "PhysHlth")) {
+    p <- p + geom_vline(aes(xintercept = mean(Value, na.rm = TRUE)), color = "#0000FF", linetype = "dashed", size = 1)
+  }
+  
+  if (var == "Age") {
+    p <- p + scale_x_continuous(
+      breaks = 1:13,
+      labels = c("18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80+")
+    )
+  } else if (var == "Education") {
+    p <- p + scale_x_continuous(
+      breaks = 1:6,
+      labels = c("No school", "Elementary/Middle", "Some high school", "High school graduate", "Some college or technical school", "College graduate")
+    )
+  } else if (var == "GenHlth") {
+    p <- p + scale_x_continuous(
+      breaks = 1:5,
+      labels = c("excellent", "very good", "good", "fair", "poor")
+    )
+  } else if (var == "Income") {
+    p <- p + scale_x_continuous(
+      breaks = 1:8,
+      labels = c("Less than $10,000", "Less than $15,000", "Less than $20,000", "Less than $25,000", "Less than $35,000", "Less than $50,000", "Less than $75,000", "$75,000 or more")
+    )
+  } else if (var %in% c("MentHlth", "PhysHlth")) {
+    p <- p + scale_x_continuous(breaks = seq(0, 30, by = 5), labels = seq(0, 30, by = 5))
+  }
+  return(p)
+})
+
+grid.arrange(grobs = plot_list_not_diabetic, ncol = 2, top = "Non-Factor Variables of Patients Not Diagnosed with Diabetes")
 ```
 
+More Americans without diabetes reported their health as excellent, very good, or good. While the number of individuals without a diabetes diagnosis significantly exceeds those with a diagnosis, the proportion of people reporting fair or poor health among non-diabetics was nearly double that of diabetics. This suggests that even among non-diabetics, there is a substantial subset experiencing poor health.\
 
+Education levels were less uniform among non-diabetics compared to diabetics. The distributions of income and age among non-diabetics closely mirror those of diabetics, though the absolute number of observations differs. This indicates that age and income are similarly distributed across both groups, despite the difference in sample size.\
+
+The Mental Health and Physical Health variables showed similar patterns between diabetics and non-diabetics. Many individuals in both groups reported no days of mental or physical health issues, although the overall number of days with health issues was comparable. This highlights that while diabetes may exacerbate health problems, the general population also experiences significant health challenges.\
 
 #### **Appendix:  Variable description**
 [@cdc2015]\
 **Diabetes_binary**\
-0 = no diabetes\
-1 = prediabetes\
-2 = diabetes\
+_NOTE:  The options present are different from the source data._\
+0 = no diabetes/prediabetes\
+1 = diabetes\
 
 **HighBP**\
 0 = no high BP\
@@ -271,6 +669,7 @@ Do you have serious difficulty walking or climbing stairs?\
 1 = male\
 
 **Age**\
+_NOTE:  The options present are different from the source data._\
 1 = Age 18 to 24 Respondents with reported age between 18 and 24 years (18 <= AGE <= 24)\
 2 = Age 25 to 29 Respondents with reported age between 25 and 29 years (25 <= AGE <= 29)\
 3 = Age 30 to 34 Respondents with reported age between 30 and 34 years (30 <= AGE <= 34)\
@@ -286,6 +685,7 @@ Do you have serious difficulty walking or climbing stairs?\
 13 = Age 80 or older Respondents with reported age between 80 and 99 years (80 <= AGE <= 99)\
 
 **Education**\
+_NOTE:  The options present are different from the source data._\
 1 = Never attended school or only kindergarten\
 2 = Grades 1 through 8 (Elementary)\
 3 = Grades 9 through 11 (Some high school)\
@@ -294,6 +694,7 @@ Do you have serious difficulty walking or climbing stairs?\
 6 = College 4 years or more (College graduate)\
 
 **Income**\
+_NOTE:  The options present are different from the source data._\
 1 = Less than $10,000\
 2 = Less than $15,000 ($10,000 to less than $15,000)\
 3 = Less than $20,000 ($15,000 to less than $20,000)\
@@ -302,4 +703,8 @@ Do you have serious difficulty walking or climbing stairs?\
 6 = Less than $50,000 ($35,000 to less than $50,000)\
 7 = Less than $75,000 ($50,000 to less than $75,000)\
 8 = $75,000 or more\
+
+# REMINDER TO DROP THE LINK TO THE MODELING.QMD
+
+# References
 
