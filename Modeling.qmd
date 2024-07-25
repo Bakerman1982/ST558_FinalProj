@@ -9,12 +9,25 @@ csl: apa.csl
 ```{r, library load, warning=FALSE, output=FALSE}
 library(tidyverse)
 library(dplyr)
+library(caret)
+library(ggplot2)
+library(rpart)
+library(rpart.plot)
+library(tree)
 ```
+
+### Diabetes Health Indicators Modeling
+
+After conducting an exploratory data analysis (EDA), our objective is to make predictions, uncover patterns within the data, and identify the most suitable model to describe the dataset. Key variables of interest include high cholesterol, high blood pressure, physical activity, fruit and vegetable consumption, body mass index, age, income, and education. Recognizing potential interactions between these variables, we will incorporate several models that account for hypothesized interactions.
+
+We will fit logistic regression models, classification tree models, and random forest models. Following this, we will identify the best-performing model from each category and compare their performance on the test data to determine the overall best model.
 
 ```{r, read-in data, output=FALSE, warning=FALSE, error=FALSE}
 #Read in the dataset
 diabetes_data_raw <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+```
 
+```{r, factorize_vars,echo=FALSE}
 #Factorize the binary variables for better downstream analysis and remove BMI observations 50
 diabetes_data_clean <- diabetes_data_raw %>%
   mutate_at(vars(Diabetes_binary, HighBP, HighChol, CholCheck, Smoker, 
@@ -24,19 +37,210 @@ diabetes_data_clean <- diabetes_data_raw %>%
   filter(BMI < 50)
 ```
 
+### Data Preparation for Modeling
 
+Using the caret package syntax, I have split the data into train and test at a 70:30 ratio respectively.  
 
 ```{r, split_data}
+#Split the data using caret package syntax
 set.seed(13579)
-train <- sample(1:nrow(diabetes_data_clean), size = nrow(diabetes_data_clean)*0.7)
-test <- dplyr::setdiff(1:nrow(diabetes_data_clean), train)
+diabetesIndex <- createDataPartition(diabetes_data_clean$Diabetes_binary, p = 0.7, list = FALSE)
+diabetes_train <- diabetes_data_clean[diabetesIndex, ] #Count = 175,794
+diabetes_test <- diabetes_data_clean[-diabetesIndex, ] #Count = 75,339
 
-diabetes_train <- diabetes_data_clean[train, ]
-diabetes_test <- diabetes_data_clean[test, ]
+#I had some problems downstream while planning and executing code to build models. R does not like when I run train() on a response variable with strictly numeric factors.  The following code corrects that issue by changing the response values from "0" and "1" to "X0" and "X1".  Henceforth, "X0" will indicate patients who do not have a diabetes diagnosis while an "X1" will affirm a diabetes diagnosis. 
+
+# Rename levels to valid variable names
+levels(diabetes_train$Diabetes_binary) <- make.names(levels(diabetes_train$Diabetes_binary))
+levels(diabetes_test$Diabetes_binary) <- make.names(levels(diabetes_test$Diabetes_binary))
+```
+
+Caret contains a trainControl() function that allows the setting of modeling parameters
+
+```{r, cv_control}
+# Define the control using a 5-fold cross-validation
+train_control <- trainControl(method = "cv", number = 5, summaryFunction = mnLogLoss, classProbs = TRUE)
+#NOTES:  classProbs has to be TRUE for mnLogLoss to work.
+#Source:  https://stackoverflow.com/questions/59669490/error-with-caret-and-summaryfunction-mnlogloss-columns-consistent-with-lev
+
+#tuningParam <- 
+
+```
+
+### Log Loss and Logistic Regression Modeling
+
+Log loss is preferred when datasets have binary response variables over other measurement metrics like accuracy because of the penalty it places on incorrect predictions.  Log Loss compares prediction probabilities to binary output; and evaluates probability estimates which make for a more robust measurement method over accuracy for probabilistic models. 
+
+Using linear modeling might not be appropriate for this data.  Logistic regression modeling would be a better alternative.  In the plot below, notice that the linear regression line does not fit our data well for a variable BMI.  The entire linear regression line completely avoids the positive diabetes diagnosis points.
+
+```{r, jitter_plot, warning=FALSE}
+ggplot(diabetes_data_clean, aes(x = BMI, y = Diabetes_binary)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm", aes(group = 1))
+```
+
+### Logistic Regression Models
+
+```{r, mod_train}
+# Base LogReg Model with no interactions
+set.seed(13579)
+base_model_LogReg <- train(Diabetes_binary ~ ., 
+                    data = diabetes_train, 
+                    method = "glm", 
+                    family = binomial, 
+                    trControl = train_control, 
+                    metric = "logLoss")
+
+# Model 1: LogReg Model with all except GenHlth and Age
+set.seed(13579)
+model_1_LogReg <- train(Diabetes_binary ~ . -GenHlth -Age, 
+                data = diabetes_train, 
+                method = "glm", 
+                family = binomial, 
+                trControl = train_control, 
+                metric = "logLoss")
+
+# Model 2: LogReg Model with all except HighBP and HighChol
+set.seed(13579)
+model_2_LogReg <- train(Diabetes_binary ~ . -HighBP -HighChol, 
+                data = diabetes_train, 
+                method = "glm", 
+                family = binomial, 
+                trControl = train_control, 
+                metric = "logLoss")
+
+# Model 3: LogReg Model with all except Age
+set.seed(13579)
+model_3_LogReg <- train(Diabetes_binary ~ . -Age,
+                data = diabetes_train, 
+                method = "glm", 
+                family = binomial, 
+                trControl = train_control, 
+                metric = "logLoss")
+
+# Model 4: LogReg Model with all except HighChol
+set.seed(13579)
+model_4_LogReg <- train(Diabetes_binary ~ . -HighChol, 
+                data = diabetes_train, 
+                method = "glm", 
+                family = binomial, 
+                trControl = train_control, 
+                metric = "logLoss")
+
+
+# Model 5: LogReg Model with all except HighBP
+set.seed(13579)
+model_5_LogReg <- train(Diabetes_binary ~ . -HighBP,
+                data = diabetes_train, 
+                method = "glm", 
+                family = binomial, 
+                trControl = train_control, 
+                metric = "logLoss")
+
+
+# Create a data frame to store the log-loss values
+log_loss_results <- data.frame(
+  Model = c("Base Model", "Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+  LogLoss = c(
+    min(base_model_LogReg$results$logLoss),
+    min(model_1_LogReg$results$logLoss),
+    min(model_2_LogReg$results$logLoss),
+    min(model_3_LogReg$results$logLoss),
+    min(model_4_LogReg$results$logLoss),
+    min(model_5_LogReg$results$logLoss)
+  )
+)
+
+# Print the log-loss results
+print(log_loss_results)
+
+# Find the model with the minimum log-loss
+best_model <- log_loss_results[which.min(log_loss_results$LogLoss), ]
+
+# Print the best model
+print(best_model)
+
+```
+
+### Classification Tree
+```{r}
+tree_control <- tree.control(nobs = nrow(diabetes_train), mincut = 1, minsize = 2)
+
+set.seed(13579)
+# Base tree model with no interactions
+base_model_tree <- rpart(Diabetes_binary ~ ., 
+                         data = diabetes_train, 
+                         method = "class", 
+                         control = rpart.control(minbucket = 20, cp = 0.002))
+
+# Plot the tree
+base_model_rpart_plot <- rpart.plot(base_model_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Base Model")
+# Predict on the test set
+base_model_predictions <- predict(base_model_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+base_model_conf_matrix <- confusionMatrix(base_model_predictions, diabetes_test$Diabetes_binary)
+
+set.seed(13579)
+# Model 1: HighChol, HighBP
+model_1_tree <- rpart(Diabetes_binary ~ . -GenHlth -Age, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
+# Plot the tree
+model_1_rpart_plot <- rpart.plot(model_1_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 1")
+# Predict on the test set
+model_1_predictions <- predict(model_1_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+model_1_conf_matrix <- confusionMatrix(model_1_predictions, diabetes_test$Diabetes_binary)
+
+set.seed(13579)
+# Model 2: CholCheck, AnyHealthcare, BMI, Fruits
+model_2_tree <- rpart(Diabetes_binary ~ . -HighBP -HighChol, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
+# Plot the tree
+model_2_rpart_plot <- rpart.plot(model_2_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 2")
+# Predict on the test set
+model_2_predictions <- predict(model_2_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+model_2_conf_matrix <- confusionMatrix(model_2_predictions, diabetes_test$Diabetes_binary)
+
+set.seed(13579)
+# Model 3: CholCheck, HighChol
+model_3_tree <- rpart(Diabetes_binary ~ . -Age, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
+# Plot the tree
+model_3_rpart_plot <- rpart.plot(model_3_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 3")
+# Predict on the test set
+model_3_predictions <- predict(model_3_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+model_3_conf_matrix <- confusionMatrix(model_3_predictions, diabetes_test$Diabetes_binary)
+
+set.seed(13579)
+# Model 4: Age, BMI, PhysActivity, Income, AnyHealthcare
+model_4_tree <- rpart(Diabetes_binary ~ . -HighChol, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
+# Plot the tree
+model_4_rpart_plot <- rpart.plot(model_4_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 4")
+# Predict on the test set
+model_4_predictions <- predict(model_4_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+model_4_conf_matrix <- confusionMatrix(model_4_predictions, diabetes_test$Diabetes_binary)
+
+set.seed(13579)
+# Model 5: Age, Income, Education
+model_5_tree <- rpart(Diabetes_binary ~ . -HighBP, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
+# Plot the tree
+model_5_rpart_plot <- rpart.plot(model_5_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 5")
+# Predict on the test set
+model_5_predictions <- predict(model_5_tree, diabetes_test, type = "class")
+# Confusion matrix to evaluate the model
+model_5_conf_matrix <- confusionMatrix(model_5_predictions, diabetes_test$Diabetes_binary)
+
 ```
 
 
+### Random Forest
+```{r}
+```
 
+
+### Final Model Selection
+```{r}
+```
 
 
 #### **Appendix:  Variable description**
