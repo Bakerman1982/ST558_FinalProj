@@ -13,7 +13,7 @@ library(caret)
 library(ggplot2)
 library(rpart)
 library(rpart.plot)
-library(tree)
+library(randomForest)
 ```
 
 ### Diabetes Health Indicators Modeling
@@ -163,8 +163,8 @@ print(best_model)
 ```
 
 ### Classification Tree
+
 ```{r}
-tree_control <- tree.control(nobs = nrow(diabetes_train), mincut = 1, minsize = 2)
 
 set.seed(13579)
 # Base tree model with no interactions
@@ -181,7 +181,7 @@ base_model_predictions <- predict(base_model_tree, diabetes_test, type = "class"
 base_model_conf_matrix <- confusionMatrix(base_model_predictions, diabetes_test$Diabetes_binary)
 
 set.seed(13579)
-# Model 1: HighChol, HighBP
+# Model 1: LogReg Model with all except GenHlth and Age
 model_1_tree <- rpart(Diabetes_binary ~ . -GenHlth -Age, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
 # Plot the tree
 model_1_rpart_plot <- rpart.plot(model_1_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 1")
@@ -191,7 +191,7 @@ model_1_predictions <- predict(model_1_tree, diabetes_test, type = "class")
 model_1_conf_matrix <- confusionMatrix(model_1_predictions, diabetes_test$Diabetes_binary)
 
 set.seed(13579)
-# Model 2: CholCheck, AnyHealthcare, BMI, Fruits
+# Model 2: LogReg Model with all except HighBP and HighChol
 model_2_tree <- rpart(Diabetes_binary ~ . -HighBP -HighChol, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
 # Plot the tree
 model_2_rpart_plot <- rpart.plot(model_2_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 2")
@@ -201,7 +201,7 @@ model_2_predictions <- predict(model_2_tree, diabetes_test, type = "class")
 model_2_conf_matrix <- confusionMatrix(model_2_predictions, diabetes_test$Diabetes_binary)
 
 set.seed(13579)
-# Model 3: CholCheck, HighChol
+# Model 3: LogReg Model with all except Age
 model_3_tree <- rpart(Diabetes_binary ~ . -Age, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
 # Plot the tree
 model_3_rpart_plot <- rpart.plot(model_3_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 3")
@@ -211,7 +211,7 @@ model_3_predictions <- predict(model_3_tree, diabetes_test, type = "class")
 model_3_conf_matrix <- confusionMatrix(model_3_predictions, diabetes_test$Diabetes_binary)
 
 set.seed(13579)
-# Model 4: Age, BMI, PhysActivity, Income, AnyHealthcare
+# Model 4: LogReg Model with all except HighChol
 model_4_tree <- rpart(Diabetes_binary ~ . -HighChol, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
 # Plot the tree
 model_4_rpart_plot <- rpart.plot(model_4_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 4")
@@ -221,7 +221,7 @@ model_4_predictions <- predict(model_4_tree, diabetes_test, type = "class")
 model_4_conf_matrix <- confusionMatrix(model_4_predictions, diabetes_test$Diabetes_binary)
 
 set.seed(13579)
-# Model 5: Age, Income, Education
+# Model 5: LogReg Model with all except HighBP
 model_5_tree <- rpart(Diabetes_binary ~ . -HighBP, data = diabetes_train, method = "class", control = rpart.control(minbucket = 20, cp = 0.002))
 # Plot the tree
 model_5_rpart_plot <- rpart.plot(model_5_tree, type = 2, extra = 104, fallen.leaves = TRUE, main = "Classification Tree for Diabetes Data Model 5")
@@ -229,12 +229,91 @@ model_5_rpart_plot <- rpart.plot(model_5_tree, type = 2, extra = 104, fallen.lea
 model_5_predictions <- predict(model_5_tree, diabetes_test, type = "class")
 # Confusion matrix to evaluate the model
 model_5_conf_matrix <- confusionMatrix(model_5_predictions, diabetes_test$Diabetes_binary)
-
 ```
 
+```{r}
+# Function to calculate evaluation metrics from a confusion matrix
+calculate_metrics <- function(conf_matrix) {
+  accuracy <- conf_matrix$overall['Accuracy']
+  precision <- conf_matrix$byClass['Pos Pred Value']
+  recall <- conf_matrix$byClass['Sensitivity']
+  f1 <- 2 * ((precision * recall) / (precision + recall))
+  
+  return(c(accuracy = accuracy, precision = precision, recall = recall, f1 = f1))
+}
+
+# Evaluate metrics for each model
+base_model_metrics <- calculate_metrics(base_model_conf_matrix)
+model_1_metrics <- calculate_metrics(model_1_conf_matrix)
+model_2_metrics <- calculate_metrics(model_2_conf_matrix)
+model_3_metrics <- calculate_metrics(model_3_conf_matrix)
+model_4_metrics <- calculate_metrics(model_4_conf_matrix)
+model_5_metrics <- calculate_metrics(model_5_conf_matrix)
+
+# Combine metrics into a data frame for comparison
+metrics_df <- data.frame(
+  Model = c("Base Model", "Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+  Accuracy = c(base_model_metrics["accuracy.Accuracy"], model_1_metrics["accuracy.Accuracy"], 
+               model_2_metrics["accuracy.Accuracy"], model_3_metrics["accuracy.Accuracy"], 
+               model_4_metrics["accuracy.Accuracy"], model_5_metrics["accuracy.Accuracy"]),
+  Precision = c(base_model_metrics["precision.Pos Pred Value"], model_1_metrics["precision.Pos Pred Value"], 
+                model_2_metrics["precision.Pos Pred Value"], model_3_metrics["precision.Pos Pred Value"], 
+                model_4_metrics["precision.Pos Pred Value"], model_5_metrics["precision.Pos Pred Value"]),
+  Recall = c(base_model_metrics["recall.Sensitivity"], model_1_metrics["recall.Sensitivity"], 
+             model_2_metrics["recall.Sensitivity"], model_3_metrics["recall.Sensitivity"], 
+             model_4_metrics["recall.Sensitivity"], model_5_metrics["recall.Sensitivity"]),
+  F1_Score = c(base_model_metrics["f1.Pos Pred Value"], model_1_metrics["f1.Pos Pred Value"], 
+               model_2_metrics["f1.Pos Pred Value"], model_3_metrics["f1.Pos Pred Value"], 
+               model_4_metrics["f1.Pos Pred Value"], model_5_metrics["f1.Pos Pred Value"])
+)
+```
+```{r}
+# Identify the model names and metrics
+model_names <- metrics_df$Model
+metrics <- metrics_df[, -1]  # Exclude the Model column
+
+# Find the maximum values and corresponding model names for each metric
+max_accuracy_value <- max(metrics$Accuracy, na.rm = TRUE)
+max_accuracy_model <- model_names[which.max(metrics$Accuracy)]
+
+max_precision_value <- max(metrics$Precision, na.rm = TRUE)
+max_precision_model <- model_names[which.max(metrics$Precision)]
+
+max_recall_value <- max(metrics$Recall, na.rm = TRUE)
+max_recall_model <- model_names[which.max(metrics$Recall)]
+
+max_f1_value <- max(metrics$F1_Score, na.rm = TRUE)
+max_f1_model <- model_names[which.max(metrics$F1_Score)]
+
+# Combine the results into a data frame
+max_metrics_df <- data.frame(
+  Metric = c("Accuracy", "Precision", "Recall", "F1_Score"),
+  Model = c(max_accuracy_model, max_precision_model, max_recall_model, max_f1_model),
+  Max_Value = c(max_accuracy_value, max_precision_value, max_recall_value, max_f1_value)
+)
+
+# Print the resulting data frame
+print(max_metrics_df)
+```
 
 ### Random Forest
 ```{r}
+set.seed(13579)
+base_model_rf <- randomForest(Diabetes_binary ~ ., data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
+#I understand we are not supposed to run the model with all main effects. I will exclude it from my terminal evaluations.  
+
+base_model_rfPred <- predict(base_model_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary))
+
+# Convert predictions to numeric
+base_model_rfPred_numeric <- as.numeric(base_model_rfPred) - 1
+diabetes_test_numeric <- as.numeric(diabetes_test$Diabetes_binary) - 1
+
+# Calculate RMSE
+base_model_rfRMSE <- sqrt(mean((base_model_rfPred_numeric - diabetes_test_numeric)^2))
+print(base_model_rfRMSE)
+
+c(rf = base_model_rfRMSE, bag = bagRMSE, tree = treeRMSE)
+
 ```
 
 
