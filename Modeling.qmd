@@ -267,6 +267,7 @@ metrics_df <- data.frame(
                model_4_metrics["f1.Pos Pred Value"], model_5_metrics["f1.Pos Pred Value"])
 )
 ```
+
 ```{r}
 # Identify the model names and metrics
 model_names <- metrics_df$Model
@@ -299,26 +300,68 @@ print(max_metrics_df)
 ### Random Forest
 ```{r}
 set.seed(13579)
+
+#Fit the randomForest models
 base_model_rf <- randomForest(Diabetes_binary ~ ., data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
-#I understand we are not supposed to run the model with all main effects. I will exclude it from my terminal evaluations.  
+model_1_rf <- randomForest(Diabetes_binary ~ . -GenHlth -Age, data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
+model_2_rf <- randomForest(Diabetes_binary ~ . -HighBP -HighChol, data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
+model_3_rf <- randomForest(Diabetes_binary ~ . -Age, data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
+model_4_rf <- randomForest(Diabetes_binary ~ . -HighChol, data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
+model_5_rf <- randomForest(Diabetes_binary ~ . -HighBP, data = diabetes_train, mtry = ncol(diabetes_train) / 3, ntree = 100, importance = TRUE)
 
-base_model_rfPred <- predict(base_model_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary))
+# Predict probabilities for the test set
+base_model_rfProbs <- predict(base_model_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
+model_1_rfProbs <- predict(model_1_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
+model_2_rfProbs <- predict(model_2_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
+model_3_rfProbs <- predict(model_3_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
+model_4_rfProbs <- predict(model_4_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
+model_5_rfProbs <- predict(model_5_rf, newdata = dplyr::select(diabetes_test, -Diabetes_binary), type = "prob")
 
-# Convert predictions to numeric
-base_model_rfPred_numeric <- as.numeric(base_model_rfPred) - 1
-diabetes_test_numeric <- as.numeric(diabetes_test$Diabetes_binary) - 1
+# Convert probabilities to predicted classes
+base_model_rfPred <- ifelse(base_model_rfProbs[, 2] > 0.5, "X1", "X0")
+model_1_rfPred <- ifelse(model_1_rfProbs[, 2] > 0.5, "X1", "X0")
+model_2_rfPred <- ifelse(model_2_rfProbs[, 2] > 0.5, "X1", "X0")
+model_3_rfPred <- ifelse(model_3_rfProbs[, 2] > 0.5, "X1", "X0")
+model_4_rfPred <- ifelse(model_4_rfProbs[, 2] > 0.5, "X1", "X0")
+model_5_rfPred <- ifelse(model_5_rfProbs[, 2] > 0.5, "X1", "X0")
 
-# Calculate RMSE
-base_model_rfRMSE <- sqrt(mean((base_model_rfPred_numeric - diabetes_test_numeric)^2))
-print(base_model_rfRMSE)
+# Create confusion matrices
+conf_matrix_base <- confusionMatrix(factor(base_model_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
+conf_matrix_1 <- confusionMatrix(factor(model_1_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
+conf_matrix_2 <- confusionMatrix(factor(model_2_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
+conf_matrix_3 <- confusionMatrix(factor(model_3_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
+conf_matrix_4 <- confusionMatrix(factor(model_4_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
+conf_matrix_5 <- confusionMatrix(factor(model_5_rfPred, levels = levels(diabetes_test$Diabetes_binary)), diabetes_test$Diabetes_binary)
 
-c(rf = base_model_rfRMSE, bag = bagRMSE, tree = treeRMSE)
+# Extract accuracy
+accuracy_base <- conf_matrix_base$overall['Accuracy']
+accuracy_1 <- conf_matrix_1$overall['Accuracy']
+accuracy_2 <- conf_matrix_2$overall['Accuracy']
+accuracy_3 <- conf_matrix_3$overall['Accuracy']
+accuracy_4 <- conf_matrix_4$overall['Accuracy']
+accuracy_5 <- conf_matrix_5$overall['Accuracy']
 
+# Create a dataframe with the accuracies
+accuracy_df <- data.frame(
+  Model = c("Base Model", "Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+  Accuracy = c(accuracy_base, accuracy_1, accuracy_2, accuracy_3, accuracy_4, accuracy_5)
+)
+
+# Print the dataframe
+print(accuracy_df)
 ```
-
 
 ### Final Model Selection
 ```{r}
+# Print the log-loss results
+print(log_loss_results)
+
+# Print the resulting data frame
+print(max_metrics_df)
+
+# Print the dataframe of the random forest models
+print(accuracy_df)
+
 ```
 
 
