@@ -126,19 +126,23 @@ pred <- function(
   )
 }
 
+#http://127.0.0.1:3521/pred?HighBP=0&CholCheck=1&BMI=28.0574&Smoker=0&Stroke=0&HeartDiseaseorAttack=0&PhysActivity=1&Fruits=1&Veggies=1&HvyAlcoholConsump=0&AnyHealthcare=1&NoDocbcCost=0&GenHlth=2.5032&MentHlth=3.151&PhysHlth=4.1863&DiffWalk=0&Sex=0&Age=8.0431&Education=5.053&Income=6.0649
+
+
+
 
 # Example function calls
 #* @plumber
 function(pr) {
   pr$handle("GET", "/example1", function() {
     pred()
-  })
+  }) #http://127.0.0.1:3521/example1
   pr$handle("GET", "/example2", function() {
     pred(HighBP = 1, BMI = 25)
-  })
+  }) #http://127.0.0.1:3521/example2
   pr$handle("GET", "/example3", function() {
     pred(Smoker = 0, Age = 50, Income = 4)
-  })
+  }) #http://127.0.0.1:3521/example3
 }
 
 # `info` Endpoint
@@ -150,3 +154,4 @@ info <- function() {
     github_url = "https://github.com/Bakerman1982/ST558_FinalProj"
   )
 }
+#http://127.0.0.1:3521/info
