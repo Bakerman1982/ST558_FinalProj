@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Brock Akerman">
+
+<title>Diabetes Project Links - Diabetes Health Indicators - Exploratory Data Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Diabetes Project Links</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./EDA.html" aria-current="page"> 
+<span class="menu-text">EDA</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./Modeling.html"> 
+<span class="menu-text">Modeling</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Diabetes Health Indicators - Exploratory Data Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Brock Akerman </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(outliers)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="diabetes-summary" class="level3">
+<h3 class="anchored" data-anchor-id="diabetes-summary">Diabetes Summary</h3>
+<p>Diabetes is a common chronic disease in the United States, affecting millions of Americans and imposing a significant financial burden on the US healthcare system. It is a disease that impairs the body’s ability to regulate blood glucose, leading to severe complications like heart disease, vision loss, and kidney disease. Early diagnosis and management through lifestyle changes and medical treatments can lessen its impact. The Center for Disease Control (CDC) reports that as of 2018, 34.2 million Americans have diabetes, with substantial economic costs nearing $400 billion annually. To better understand diabetes, the CDC conducts an annual telephone survey through the Behavioral Risk Factor Surveillance System (BRFSS). They have been collecting observational data since 1984 and through this program, 400,000 responses are collected annually on various behaviors and conditions about the disease. In this exploratory data analysis, we will look at the variables, the factors, the problems that come with raw data. Visual help will give some insight into patterns and narratives.</p>
+</section>
+<section id="dataset-and-variables" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-and-variables">Dataset and Variables</h3>
+<p>The dataset found in this analysis is from 2015. There are 253680 observations, 21 independent variables and a dependent variable called Diabetes_binary that indicates one of three categories relating to a diabetic diagnosis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Read in the dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>diabetes_data_raw <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"diabetes_binary_health_indicators_BRFSS2015.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Listing of variables</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(diabetes_data_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Diabetes_binary"      "HighBP"               "HighChol"            
+ [4] "CholCheck"            "BMI"                  "Smoker"              
+ [7] "Stroke"               "HeartDiseaseorAttack" "PhysActivity"        
+[10] "Fruits"               "Veggies"              "HvyAlcoholConsump"   
+[13] "AnyHealthcare"        "NoDocbcCost"          "GenHlth"             
+[16] "MentHlth"             "PhysHlth"             "DiffWalk"            
+[19] "Sex"                  "Age"                  "Education"           
+[22] "Income"              </code></pre>
+</div>
+</div>
+<p>Upon reviewing the dataset, I found no missing values. However, there are approximately 9,000 rows where the BMI values exceed 50. While I considered removing these extreme values, I decided against it for now. In a production setting, I would seek advice from a medical specialist or someone familiar with the data collection to investigate these high values for potential errors or explanations. I will conduct an outlier test on these values, and depending on the results, I may prepare two reports—one including the BMI extremes and one excluding them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Checking for missing data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>diabetes_data_NA_report <span class="ot">&lt;-</span> diabetes_data_raw <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span><span class="fu">sum</span>(<span class="fu">is.na</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Variable"</span>, <span class="at">values_to =</span> <span class="st">"Number of missing values discovered"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(diabetes_data_NA_report, <span class="at">n =</span> <span class="cn">Inf</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 22 × 2
+   Variable             `Number of missing values discovered`
+   &lt;chr&gt;                                                &lt;int&gt;
+ 1 Diabetes_binary                                          0
+ 2 HighBP                                                   0
+ 3 HighChol                                                 0
+ 4 CholCheck                                                0
+ 5 BMI                                                      0
+ 6 Smoker                                                   0
+ 7 Stroke                                                   0
+ 8 HeartDiseaseorAttack                                     0
+ 9 PhysActivity                                             0
+10 Fruits                                                   0
+11 Veggies                                                  0
+12 HvyAlcoholConsump                                        0
+13 AnyHealthcare                                            0
+14 NoDocbcCost                                              0
+15 GenHlth                                                  0
+16 MentHlth                                                 0
+17 PhysHlth                                                 0
+18 DiffWalk                                                 0
+19 Sex                                                      0
+20 Age                                                      0
+21 Education                                                0
+22 Income                                                   0</code></pre>
+</div>
+</div>
+<p>As part of wrangling the data, this code chunk was created to format the data into factors for variables that it makes sense to do so. The remaining factors I will leave as numeric values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Factorize the binary variables for better downstream analysis. </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>diabetes_data_clean <span class="ot">&lt;-</span> diabetes_data_raw <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(Diabetes_binary, HighBP, HighChol, CholCheck, Smoker, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                 Stroke, HeartDiseaseorAttack, PhysActivity, Fruits, </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                 Veggies, HvyAlcoholConsump, AnyHealthcare, NoDocbcCost, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                 DiffWalk, Sex), as.factor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="outlier-test-for-variable-bmi" class="level3">
+<h3 class="anchored" data-anchor-id="outlier-test-for-variable-bmi">Outlier Test for Variable BMI</h3>
+<p>Earlier, I expressed concern about outliers in the BMI variable, and these concerns appear to be justified. Both numeric and visual tests indicate a substantial number of outliers. The numeric tests showed that 2,963 observations fell outside three standard deviations from the mean, while the IQR test identified 9,847 observations beyond the bounds.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Check outliers using Z-scores. </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>outlier_z_data <span class="ot">&lt;-</span> diabetes_data_clean <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">z_score =</span> (BMI <span class="sc">-</span> <span class="fu">mean</span>(BMI)) <span class="sc">/</span> <span class="fu">sd</span>(BMI)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(z_score) <span class="sc">&gt;</span> <span class="dv">3</span>)       <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(BMI)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Check outliers using the interquartile method</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Q1 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(diabetes_data_clean<span class="sc">$</span>BMI, <span class="fl">0.25</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>Q3 <span class="ot">&lt;-</span> <span class="fu">quantile</span>(diabetes_data_clean<span class="sc">$</span>BMI, <span class="fl">0.75</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>IQR <span class="ot">&lt;-</span> Q3 <span class="sc">-</span> Q1</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>outlier_IQR_data <span class="ot">&lt;-</span> diabetes_data_clean <span class="sc">%&gt;%</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(BMI <span class="sc">&lt;</span> (Q1 <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR) <span class="sc">|</span> BMI <span class="sc">&gt;</span> (Q3 <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> IQR))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(outlier_z_data) <span class="co"># Number of outliers using the Z-Score method</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+      n
+  &lt;int&gt;
+1  2963</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(outlier_z_data<span class="sc">$</span>BMI[outlier_z_data<span class="sc">$</span>BMI <span class="sc">&gt;=</span> <span class="dv">30</span>]) <span class="co"># Finding cutoff value; lowest BMI value outside 3 SDs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 49</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(outlier_IQR_data) <span class="co"># Number of outliers using the IQR method</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+      n
+  &lt;int&gt;
+1  9847</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(outlier_IQR_data<span class="sc">$</span>BMI[outlier_IQR_data<span class="sc">$</span>BMI <span class="sc">&lt;=</span> <span class="dv">30</span>]) <span class="co"># Finding cutoff value; highest BMI outside of the lowerbound range</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(outlier_IQR_data<span class="sc">$</span>BMI[outlier_IQR_data<span class="sc">$</span>BMI <span class="sc">&gt;=</span> <span class="dv">30</span>]) <span class="co"># Finding cutoff value; lowest BMI outside of the upperbound range</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 42</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove BMI observations 50</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>diabetes_data_clean_noOutliers <span class="ot">&lt;-</span> diabetes_data_clean <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(BMI <span class="sc">&lt;</span> <span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This boxplot highlights in red observations that are considered outliers.<br>
+</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the datasets</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean, <span class="at">Source =</span> <span class="st">"With Outliers"</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean_noOutliers, <span class="at">Source =</span> <span class="st">"No Outliers"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with faceting</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> BMI)) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"lightblue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">outlier.colour =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Boxplot of BMI"</span>, <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">"BMI"</span>) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Source) <span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/outlier_box-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The histogram similarly illustrates the pronounced right skew caused by the outliers in the distribution. The dotted red lines indicate the boundaries for three standard deviations from the mean.<br>
+</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the datasets</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean, <span class="at">Source =</span> <span class="st">"With Outliers"</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean_noOutliers, <span class="at">Source =</span> <span class="st">"No Outliers"</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean and standard deviation</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>mean_bmi <span class="ot">&lt;-</span> <span class="fu">mean</span>(diabetes_data_clean<span class="sc">$</span>BMI, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>sd_bmi <span class="ot">&lt;-</span> <span class="fu">sd</span>(diabetes_data_clean<span class="sc">$</span>BMI, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the boundaries for 3 standard deviations from the mean</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>lower_bound <span class="ot">&lt;-</span> mean_bmi <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> sd_bmi</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>upper_bound <span class="ot">&lt;-</span> mean_bmi <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> sd_bmi</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with faceting</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> BMI)) <span class="sc">+</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(lower_bound, upper_bound), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Histogram of BMI"</span>, <span class="at">x =</span> <span class="st">"BMI"</span>, <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Source) <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/outlier_hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In a typical Quantile-Quantile (QQ) plot, we expect to see a diagonal, mostly straight line. However, in the case of BMI without removal of outliers, the Q-Q plot shows a significant deviation from this pattern. The tails of the Q-Q line curve away from the diagonal line quite drastically, which strongly indicates the presence of outliers.<br>
+</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the datasets</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean, <span class="at">Source =</span> <span class="st">"With Outliers"</span>),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(diabetes_data_clean_noOutliers, <span class="at">Source =</span> <span class="st">"No Outliers"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with faceting</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">sample =</span> BMI)) <span class="sc">+</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq</span>() <span class="sc">+</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_qq_line</span>(<span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"QQ Plot of BMI"</span>, <span class="at">x =</span> <span class="st">"Theoretical Quantiles"</span>, <span class="at">y =</span> <span class="st">"Sample Quantiles"</span>) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Source) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/outlier_QQ-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the totality of the information, I decided to treat BMI values of 50 and higher as outliers and remove them from the dataset. I chose a conservative approach using the Z-score method, which set the cutoff at 49. In contrast, the IQR and boxplot methods suggested a cutoff at 42, resulting in the removal of 6,000 more observations than the Z-score method. Given the dataset’s large size, I wanted to avoid being overly aggressive without consulting a health specialist or someone familiar with the data collection. After rerunning the boxplot, histogram, and QQ plot, I am confident in moving forward with the dataset after removing the outliers.<br>
+</p>
+</section>
+<section id="data-summary" class="level3">
+<h3 class="anchored" data-anchor-id="data-summary">Data Summary</h3>
+<p>As a result of there being many variables, grouping the factored variables into themes made sense.<br>
+</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Group variables into common themes.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>Health_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Diabetes_binary"</span>,<span class="st">"HighBP"</span>,<span class="st">"HighChol"</span>,<span class="st">"Stroke"</span>,<span class="st">"HeartDiseaseorAttack"</span>,<span class="st">"DiffWalk"</span>,<span class="st">"Sex"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>Lifestyle_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"PhysActivity"</span>,<span class="st">"Smoker"</span>,<span class="st">"Fruits"</span>,<span class="st">"Veggies"</span>,<span class="st">"HvyAlcoholConsump"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>Healthcare_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CholCheck"</span>,<span class="st">"AnyHealthcare"</span>,<span class="st">"NoDocbcCost"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Health Factors</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Levels</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Counts</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Proportions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Diabetes_binary</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">216638(0) 34495(1)</td>
+<td style="text-align: left;">0.86(0) 0.14(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HighBP</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">143908(0) 107225(1)</td>
+<td style="text-align: left;">0.57(0) 0.43(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HighChol</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">144693(0) 106440(1)</td>
+<td style="text-align: left;">0.58(0) 0.42(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Stroke</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">240973(0) 10160(1)</td>
+<td style="text-align: left;">0.96(0) 0.04(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HeartDiseaseorAttack</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">227533(0) 23600(1)</td>
+<td style="text-align: left;">0.91(0) 0.09(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DiffWalk</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">209752(0) 41381(1)</td>
+<td style="text-align: left;">0.84(0) 0.16(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sex</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">140299(0) 110834(1)</td>
+<td style="text-align: left;">0.56(0) 0.44(1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Lifestyle Factors</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Levels</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Counts</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Proportions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">PhysActivity</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">60557(0) 190576(1)</td>
+<td style="text-align: left;">0.24(0) 0.76(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Smoker</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">139778(0) 111355(1)</td>
+<td style="text-align: left;">0.56(0) 0.44(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fruits</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">91567(0) 159566(1)</td>
+<td style="text-align: left;">0.36(0) 0.64(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Veggies</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">47198(0) 203935(1)</td>
+<td style="text-align: left;">0.19(0) 0.81(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HvyAlcoholConsump</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">236945(0) 14188(1)</td>
+<td style="text-align: left;">0.94(0) 0.06(1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Healthcare Factors</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Levels</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Counts</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Proportions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CholCheck</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">9398(0) 241735(1)</td>
+<td style="text-align: left;">0.04(0) 0.96(1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AnyHealthcare</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">12218(0) 238915(1)</td>
+<td style="text-align: left;">0.05(0) 0.95(1)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NoDocbcCost</td>
+<td style="text-align: left;">0,1</td>
+<td style="text-align: left;">230169(0) 20964(1)</td>
+<td style="text-align: left;">0.92(0) 0.08(1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
+<th colspan="6" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+Summary Statistics on Non-Factor Variables
+</div></th>
+</tr>
+<tr class="odd">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Min</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">1st Qu.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Median</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">3rd Qu.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">BMI</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">28.057372</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">49</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GenHlth</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.503227</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Age</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8.043053</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Education</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5.053008</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Income</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6.064874</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MentHlth</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3.151000</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PhysHlth</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4.186328</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">30</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+</div>
+</section>
+<section id="data-visualization" class="level3">
+<h3 class="anchored" data-anchor-id="data-visualization">Data Visualization</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the red and gray colors</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>ncsu_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"#5B6770"</span>,  <span class="co"># Gray for absence</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"#CC0000"</span>   <span class="co"># Red for presence</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define health factors excluding Diabetes_binary</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>Health_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"HighBP"</span>, <span class="st">"HighChol"</span>, <span class="st">"Stroke"</span>, <span class="st">"HeartDiseaseorAttack"</span>, <span class="st">"DiffWalk"</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter dataset for Diabetes_binary = 1</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>filtered_data <span class="ot">&lt;-</span> diabetes_data_clean_noOutliers <span class="sc">%&gt;%</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Diabetes_binary <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(Health_Factors))</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data to long format</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>long_data <span class="ot">&lt;-</span> filtered_data <span class="sc">%&gt;%</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Health_Factor"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Health_Factor, Value) <span class="sc">%&gt;%</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the stacked horizontal bar chart with custom red and gray colors</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(long_data, <span class="fu">aes</span>(<span class="at">x =</span> Count, <span class="at">y =</span> Health_Factor, <span class="at">fill =</span> <span class="fu">as.factor</span>(Value))) <span class="sc">+</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> ncsu_colors,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"Absence"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Presence"</span>)  <span class="co"># Change legend labels</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span>,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Health Factor"</span>,</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Level"</span>,</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Health Factors for those diagnosed with Diabetes"</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/bar_chart_health_factors-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The bar chart reveals that a positive diabetes diagnosis is indiscriminate along gender lines, indicating that both males and females are equally likely to be diagnosed with diabetes. This suggests that gender does not play a significant role in the prevalence of diabetes within the studied population.</p>
+<p>Interestingly, the presence of heart disease, including at least one heart attack or stroke, does not appear to be a necessary comorbidity for diabetes. While cardiovascular issues are common among diabetes patients, their absence in a substantial number of cases indicates that diabetes can develop independently of these conditions.</p>
+<p>However, the data shows that high cholesterol and high blood pressure are prevalent among diabetes patients, with over two-thirds of those diagnosed exhibiting these conditions. This finding underscores the strong association between diabetes and these two risk factors. High cholesterol and high blood pressure are known to contribute to insulin resistance and other metabolic disturbances that can lead to the development and progression of diabetes.</p>
+<p>This information is crucial for both preventive measures and management strategies. For instance, monitoring and controlling blood pressure and cholesterol levels should be a priority in diabetes prevention programs. For individuals already diagnosed with diabetes, managing these conditions is essential to prevent complications and improve overall health outcomes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the red and gray colors</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>ncsu_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"#5B6770"</span>,  <span class="co"># Gray for absence</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"#CC0000"</span>   <span class="co"># Red for presence</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define lifestyle factors</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>Lifestyle_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"PhysActivity"</span>, <span class="st">"Smoker"</span>, <span class="st">"Fruits"</span>, <span class="st">"Veggies"</span>, <span class="st">"HvyAlcoholConsump"</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter dataset for Diabetes_binary = 1</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>filtered_data_lifestyle <span class="ot">&lt;-</span> diabetes_data_clean_noOutliers <span class="sc">%&gt;%</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Diabetes_binary <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(Lifestyle_Factors))</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert all columns to factors</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>filtered_data_lifestyle <span class="ot">&lt;-</span> filtered_data_lifestyle <span class="sc">%&gt;%</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.factor))</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data to long format</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>long_data_lifestyle <span class="ot">&lt;-</span> filtered_data_lifestyle <span class="sc">%&gt;%</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Lifestyle_Factor"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Lifestyle_Factor, Value) <span class="sc">%&gt;%</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the stacked horizontal bar chart with custom ncsu colors</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(long_data_lifestyle, <span class="fu">aes</span>(<span class="at">x =</span> Count, <span class="at">y =</span> Lifestyle_Factor, <span class="at">fill =</span> <span class="fu">as.factor</span>(Value))) <span class="sc">+</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> ncsu_colors,</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"Absence"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Presence"</span>)  <span class="co"># Change legend labels</span></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span>,</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lifestyle Factor"</span>,</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Level"</span>,</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Lifestyle Factors for those diagnosed with Diabetes"</span></span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/bar_chart_lifestyle_factors-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Many of the variables in the lifestyle group—such as smoking, physical activity, and fruit consumption—are split evenly among the participants. However, a noteworthy finding is that heavy alcohol consumption is not common among patients diagnosed with diabetes. In contrast, over three-quarters of these patients reported consuming vegetables one or more times a day.</p>
+<p>This disparity between fruit and vegetable consumption is intriguing. I hypothesize that it may be due to the different ways these foods are typically prepared and consumed. Fruits are often eaten raw, making them convenient and quick to consume without additional preparation. On the other hand, vegetables frequently require cooking or seasoning, which may involve adding ingredients like oils, sauces, or salt. This additional preparation might affect the frequency and ease with which vegetables are consumed compared to fruits.</p>
+<p>Furthermore, it’s worth exploring how these dietary habits correlate with diabetes management and overall health outcomes. For instance, the nutrients obtained from raw fruits and prepared vegetables might have different impacts on blood sugar levels and other health markers. Understanding these nuances can help tailor dietary recommendations more effectively for individuals with diabetes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the red and gray colors</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>ncsu_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"#5B6770"</span>,  <span class="co"># Gray for absence</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"#CC0000"</span>   <span class="co"># Red for presence</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define healthcare factors</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>Healthcare_Factors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CholCheck"</span>, <span class="st">"AnyHealthcare"</span>, <span class="st">"NoDocbcCost"</span>)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter dataset for Diabetes_binary = 1</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>filtered_data_healthcare <span class="ot">&lt;-</span> diabetes_data_clean_noOutliers <span class="sc">%&gt;%</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Diabetes_binary <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(Healthcare_Factors))</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data to long format</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>long_data_healthcare <span class="ot">&lt;-</span> filtered_data_healthcare <span class="sc">%&gt;%</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Healthcare_Factor"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Healthcare_Factor, Value) <span class="sc">%&gt;%</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">Count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the stacked horizontal bar chart with custom ncsu colors</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(long_data_healthcare, <span class="fu">aes</span>(<span class="at">x =</span> Count, <span class="at">y =</span> Healthcare_Factor, <span class="at">fill =</span> <span class="fu">as.factor</span>(Value))) <span class="sc">+</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> ncsu_colors,</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"Absence"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Presence"</span>)  <span class="co"># Change legend labels</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span>,</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Healthcare Factor"</span>,</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Level"</span>,</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Healthcare Factors for those diagnosed with Diabetes"</span></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/bar_chart_healthcare_factors-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Healthcare factors significantly influence the diagnosis of diabetes. Approximately 97% of participants reported having had a cholesterol check within the last five years, and around 95% confirmed having healthcare coverage. It stands to reason that both a cholesterol check and healthcare coverage are essential for diagnosing diabetes. Furthermore, these two variables might interact with each other, so we will test for their covariance.</p>
+<p>Eight percent of patients reported not seeing a doctor when needed in the past 12 months due to cost. While the United States has made significant strides in expanding healthcare coverage, this remaining proportion highlights the need for further adjustments in public policy to ensure that all individuals can access medical care regardless of expense.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the NCSU colors</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>ncsu_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Distribution"</span> <span class="ot">=</span> <span class="st">"#CC0000"</span>,  <span class="co"># Red for the distribution</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Mean"</span> <span class="ot">=</span> <span class="st">"#0000FF"</span>,         <span class="co"># Blue for the mean line</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Median"</span> <span class="ot">=</span> <span class="st">"#FFA500"</span>        <span class="co"># Orange for the median line</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(diabetes_data_clean_noOutliers, <span class="fu">aes</span>(<span class="at">x =</span> BMI)) <span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">binwidth =</span> <span class="dv">1</span>,  <span class="co"># Adjust binwidth as needed</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> ncsu_colors[<span class="st">"Distribution"</span>],</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="fu">mean</span>(BMI, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">color =</span> ncsu_colors[<span class="st">"Mean"</span>], <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="fu">median</span>(BMI, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)), <span class="at">color =</span> ncsu_colors[<span class="st">"Median"</span>], <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> mean_bmi, <span class="at">y =</span> <span class="cn">Inf</span>, <span class="at">label =</span> <span class="st">"Mean"</span>, <span class="at">color =</span> ncsu_colors[<span class="st">"Mean"</span>], <span class="at">vjust =</span> <span class="fl">1.5</span>, <span class="at">hjust =</span> <span class="fl">1.1</span>) <span class="sc">+</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of BMI"</span>,</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"BMI"</span>,</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Frequency"</span></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/BMI_Hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We have already examined the histogram after removing the outliers, but I wanted to present a more detailed view to highlight some nuances. Upon removing the outliers, we first observe that the right tail tapers but then abruptly gets truncated at around 500 observations when values reach 49. There is still a slight right skew, as the mean is positioned to the right of the median, indicating that the distribution of observations is not perfectly symmetrical around the mean..</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/facet_summary_diab-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This facet contains plots from diagnosed diabetics based on our non-factor variables. Patients were observed to report their general health as good, fair, or poor, indicating a decline in quality of life. Regarding education, diabetes diagnoses were evenly distributed among high school graduates, college graduates, and those with any college or technical school experience. Diabetes appears to be more prevalent among higher-income and older individuals, suggesting a possible interaction between these two variables that warrants further investigation. Many diabetics reported no days of mental or physical health issues, though more individuals with diabetes reported a higher number of days with physical health issues compared to mental health issues.<br>
+</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="EDA_files/figure-html/facet_summary_no_diab-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>More Americans without diabetes reported their health as excellent, very good, or good. While the number of individuals without a diabetes diagnosis significantly exceeds those with a diagnosis, the proportion of people reporting fair or poor health among non-diabetics was nearly double that of diabetics. This suggests that even among non-diabetics, there is a substantial subset experiencing poor health.<br>
+</p>
+<p>Education levels were less uniform among non-diabetics compared to diabetics. The distributions of income and age among non-diabetics closely mirror those of diabetics, though the absolute number of observations differs. This indicates that age and income are similarly distributed across both groups, despite the difference in sample size.<br>
+</p>
+<p>The Mental Health and Physical Health variables showed similar patterns between diabetics and non-diabetics. Many individuals in both groups reported no days of mental or physical health issues, although the overall number of days with health issues was comparable. This highlights that while diabetes may exacerbate health problems, the general population also experiences significant health challenges.<br>
+</p>
+<section id="appendix-variable-description" class="level4">
+<h4 class="anchored" data-anchor-id="appendix-variable-description"><strong>Appendix: Variable description</strong></h4>
+<p><span class="citation" data-cites="cdc2015">(<a href="#ref-cdc2015" role="doc-biblioref">Disease Control &amp; Prevention, 2015</a>)</span><br>
+<strong>Diabetes_binary</strong><br>
+<em>NOTE: The options present are different from the source data.</em><br>
+0 = no diabetes/prediabetes<br>
+1 = diabetes<br>
+</p>
+<p><strong>HighBP</strong><br>
+0 = no high BP<br>
+1 = high BP<br>
+</p>
+<p><strong>HighChol</strong><br>
+0 = no high cholesterol<br>
+1 = high cholesterol<br>
+</p>
+<p><strong>CholCheck</strong><br>
+0 = no cholesterol check in 5 years<br>
+1 = cholesterol check in 5 years<br>
+</p>
+<p><strong>BMI</strong><br>
+Continuous Data<br>
+</p>
+<p><strong>Smoker</strong><br>
+To the question: Have you smoked at least 100 cigarettes in your entire life? [Note: 5 packs = 100 cigarettes]<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>Stroke</strong><br>
+To the question: (Ever told) you had a stroke.<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>HeartDiseaseorAttack</strong><br>
+Coronary heart disease (CHD) or myocardial infarction (MI)<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>PhysActivity</strong><br>
+Physical activity in past 30 days (not including job)<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>Fruits</strong><br>
+Consume Fruit 1 or more times per day<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>Veggies</strong><br>
+Consume Vegetables 1 or more times per day<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>HvyAlcoholConsump</strong><br>
+(adult men &gt;=14 drinks per week and adult women&gt;=7 drinks per week)<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>AnyHealthcare</strong><br>
+Have any kind of health care coverage, including health insurance, prepaid plans such as HMO, etc.<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>NoDocbcCost</strong><br>
+To the question: Was there a time in the past 12 months when you needed to see a doctor but could not because of cost?<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>GenHlth</strong><br>
+To the question: Would you say that in general your health is: scale 1-5<br>
+1 = excellent<br>
+2 = very good<br>
+3 = good<br>
+4 = fair<br>
+5 = poor<br>
+</p>
+<p><strong>MentHlth</strong><br>
+Days of poor mental health scale 1-30 days<br>
+</p>
+<p><strong>PhysHlth</strong><br>
+physical illness or injury days in past 30 days scale 1-30<br>
+</p>
+<p><strong>DiffWalk</strong><br>
+Do you have serious difficulty walking or climbing stairs?<br>
+0 = no<br>
+1 = yes<br>
+</p>
+<p><strong>Sex</strong><br>
+0 = female<br>
+1 = male<br>
+</p>
+<p><strong>Age</strong><br>
+<em>NOTE: The options present are different from the source data.</em><br>
+1 = Age 18 to 24 Respondents with reported age between 18 and 24 years (18 &lt;= AGE &lt;= 24)<br>
+2 = Age 25 to 29 Respondents with reported age between 25 and 29 years (25 &lt;= AGE &lt;= 29)<br>
+3 = Age 30 to 34 Respondents with reported age between 30 and 34 years (30 &lt;= AGE &lt;= 34)<br>
+4 = Age 35 to 39 Respondents with reported age between 35 and 39 years (35 &lt;= AGE &lt;= 39)<br>
+5 = Age 40 to 44 Respondents with reported age between 40 and 44 years (40 &lt;= AGE &lt;= 44)<br>
+6 = Age 45 to 49 Respondents with reported age between 45 and 49 years (45 &lt;= AGE &lt;= 49)<br>
+7 = Age 50 to 54 Respondents with reported age between 50 and 54 years (50 &lt;= AGE &lt;= 54)<br>
+8 = Age 55 to 59 Respondents with reported age between 55 and 59 years (55 &lt;= AGE &lt;= 59)<br>
+9 = Age 60 to 64 Respondents with reported age between 60 and 64 years (60 &lt;= AGE &lt;= 64)<br>
+10 = Age 65 to 69 Respondents with reported age between 65 and 69 years (65 &lt;= AGE &lt;= 69)<br>
+11 = Age 70 to 74 Respondents with reported age between 70 and 74 years (70 &lt;= AGE &lt;= 74)<br>
+12 = Age 75 to 79 Respondents with reported age between 75 and 79 years (75 &lt;= AGE &lt;= 79)<br>
+13 = Age 80 or older Respondents with reported age between 80 and 99 years (80 &lt;= AGE &lt;= 99)<br>
+</p>
+<p><strong>Education</strong><br>
+<em>NOTE: The options present are different from the source data.</em><br>
+1 = Never attended school or only kindergarten<br>
+2 = Grades 1 through 8 (Elementary)<br>
+3 = Grades 9 through 11 (Some high school)<br>
+4 = Grade 12 or GED (High school graduate)<br>
+5 = College 1 year to 3 years (Some college or technical school)<br>
+6 = College 4 years or more (College graduate)<br>
+</p>
+<p><strong>Income</strong><br>
+<em>NOTE: The options present are different from the source data.</em><br>
+1 = Less than $10,000<br>
+2 = Less than $15,000 ($10,000 to less than $15,000)<br>
+3 = Less than $20,000 ($15,000 to less than $20,000)<br>
+4 = Less than $25,000 ($20,000 to less than $25,000)<br>
+5 = Less than $35,000 ($25,000 to less than $35,000)<br>
+6 = Less than $50,000 ($35,000 to less than $50,000)<br>
+7 = Less than $75,000 ($50,000 to less than $75,000)<br>
+8 = $75,000 or more<br>
+</p>
+<p><a href="https://bakerman1982.github.io/ST558_FinalProj/Modeling.html">Link to Modeling.qmd on Github</a></p>
+</section>
+</section>
+<section id="references" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-cdc2015" class="csl-entry" role="listitem">
+Disease Control, C. for, &amp; Prevention. (2015). <em>BRFSS codebook 2015</em>. <a href="https://www.cdc.gov/brfss/annual_data/2015/pdf/codebook15_llcp.pdf">https://www.cdc.gov/brfss/annual_data/2015/pdf/codebook15_llcp.pdf</a>
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
