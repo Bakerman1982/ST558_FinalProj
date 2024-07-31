@@ -704,6 +704,6 @@ _NOTE:  The options present are different from the source data._\
 7 = Less than $75,000 ($50,000 to less than $75,000)\
 8 = $75,000 or more\
 
-[Link to Modeling.qmd on Github](https://bakerman1982.github.io/ST558_FinalProj/Modeling.html)
+[Link to Modeling.qmd on Github](Modeling.html)
 
 # References
